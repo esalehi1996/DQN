@@ -27,7 +27,7 @@ class QNetwork(nn.Module):
         # Q2 architecture
 
 
-        # self.apply(weights_init_)
+        self.apply(weights_init_)
 
     def forward(self, state):
         # print(xu.shape)

@@ -71,13 +71,13 @@ class DQN(object):
         with torch.no_grad():
             if evaluate is False:
                 self.env_steps += 1
-            eps_threshold = self.eps_greedy_parameters['EPS_END'] + (
+                eps_threshold = self.eps_greedy_parameters['EPS_END'] + (
                             self.eps_greedy_parameters['EPS_START'] - self.eps_greedy_parameters['EPS_END']) * \
                                     math.exp(-1. * self.env_steps / self.eps_greedy_parameters['EPS_DECAY'])
 
-            sample = random.random()
-            if sample < eps_threshold and evaluate is False:
-                return torch.tensor([[random.randrange(self.act_dim)]],dtype=torch.long).cpu().numpy()[0][0]
+                sample = random.random()
+                if sample < eps_threshold:
+                    return torch.tensor([[random.randrange(self.act_dim)]],dtype=torch.long).cpu().numpy()[0][0]
             # print(torch.from_numpy(state).float())
 
             state = torch.from_numpy(state).float().to(device = self.device)
@@ -132,8 +132,7 @@ class DQN(object):
         if self.args['PER'] is True:
             batch_obs, batch_next_obs, batch_act, batch_rewards, batch_gammas, batch_final_flag , tree_idx, is_weight = memory.sample(batch_size)
         else:
-            batch_obs, batch_next_obs, batch_act, batch_rewards, batch_gammas, batch_final_flag  = memory.sample(
-                batch_size)
+            batch_obs, batch_next_obs, batch_act, batch_rewards, batch_gammas, batch_final_flag  = memory.sample(batch_size)
 
 
 
