@@ -45,7 +45,7 @@ def run_exp(args):
         updates = 1
         agent = DQN(env, args)
 
-        # memory.reset(seed)
+        memory.reset(seed)
 
         ls_running_rewards = []
         avg_reward = 0
