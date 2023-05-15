@@ -18,14 +18,14 @@ import math
 import random
 
 class DQN(object):
-    def __init__(self, env, args):
+    def __init__(self, env, obs_size , args):
 
 
         self.args = args
 
         action_space = env.action_space
 
-        self.obs_dim = env.reset()['image'].reshape(-1).shape[0]
+        self.obs_dim = obs_size
         # self.state_size = obs_size
 
         self.act_dim = action_space.n

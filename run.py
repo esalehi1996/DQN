@@ -29,7 +29,6 @@ def run_exp(args):
         obs_size = env.reset()['image'].reshape(-1).shape[0]
         print(env.action_space, obs_size , env.reset()['image'].shape)
     else:
-
         obs_size = env.reset()['image'].reshape(-1).shape[0] * args['frame_stacking_length']
         print(env.action_space, obs_size , env.reset()['image'].shape)
     memory = buffer(args['replay_size'], obs_size, env.action_space.n, args)
@@ -41,9 +40,9 @@ def run_exp(args):
         print('seed number '+str(seed)+' running')
         print('-------------------------------------')
         total_numsteps = 0
-        k_steps = 0
+        # k_steps = 0
         updates = 1
-        agent = DQN(env, args)
+        agent = DQN(env, obs_size , args)
 
         memory.reset(seed)
 
@@ -57,16 +56,33 @@ def run_exp(args):
             episode_reward = 0
             episode_steps = 0
             done = False
+            # print('reset')
             state = env.reset()
             ls_obs = []
+            ls_obs_ = []
             ls_actions = []
             ls_rewards = []
             action = 0
             reward = 0
+            step = 1
 
             while not done:
                 state = state['image'].reshape(-1)
+                ls_obs_.append(state)
+                if args['alg_type'] == "frame_stack":
+                    if step < args['frame_stacking_length']:
+                        empty = np.zeros(state.shape[0]*(args['frame_stacking_length']-step))
+                        non_empty = np.array(ls_obs_[:step]).reshape(-1)
+                        # print(empty.shape,non_empty.shape)
+                        state = np.concatenate((empty,non_empty))
+                        # print(state.shape)
+                    else:
+                        state = np.array(ls_obs_[step-args['frame_stacking_length']:step]).reshape(-1)
+                        # print(state.shape)
+
                 ls_obs.append(state)
+
+
                 action = agent.select_action(state , evaluate = False)
                 # action = env.action_space.sample()
 
@@ -81,7 +97,7 @@ def run_exp(args):
                     avg_q_loss += q_loss
                 episode_steps += 1
                 total_numsteps += 1
-                k_steps += 1
+                step += 1
                 episode_reward = reward + episode_reward
 
                 state = next_state
@@ -101,7 +117,7 @@ def run_exp(args):
                     break
 
 
-            # print('gg')
+            # print('done')
             memory.push(ls_obs, ls_actions, ls_rewards,agent)  # Append transition to memory
             k_episode += 1
             # print(ls_states,ls_actions,ls_rewards)
@@ -205,11 +221,23 @@ def log_test_and_save(env, agent, writer, args, avg_reward, avg_q_loss, updates,
         state = env.reset()
         episode_reward = 0
         episode_rewards = []
+        ls_obs = []
         done = False
-        steps = 0
+        step = 1
         while not done:
             state = state['image'].reshape(-1)
-            steps += 1
+            ls_obs.append(state)
+            if args['alg_type'] == "frame_stack":
+                if step < args['frame_stacking_length']:
+                    empty = np.zeros(state.shape[0] * (args['frame_stacking_length'] - step))
+                    non_empty = np.array(ls_obs[:step]).reshape(-1)
+                    # print(empty.shape,non_empty.shape)
+                    state = np.concatenate((empty, non_empty))
+                    # print(state.shape)
+                else:
+                    state = np.array(ls_obs[step - args['frame_stacking_length']:step]).reshape(-1)
+
+            step += 1
             action = agent.select_action(state , evaluate = True)
             # action = env.action_space.sample()
             next_state, reward, done, _ = env.step(action)
@@ -217,7 +245,7 @@ def log_test_and_save(env, agent, writer, args, avg_reward, avg_q_loss, updates,
             episode_reward += reward
 
             state = next_state
-            if steps >= args['max_env_steps']:
+            if step >= args['max_env_steps']:
                 break
         avg_reward += episode_reward
         rets = []

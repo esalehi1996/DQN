@@ -154,8 +154,14 @@ class buffer:
         else:
             self.PER = False
 
+        # if args['alg_type'] == 'full_obs':
         self.buffer_obs = np.zeros([self.capacity, self.obs_dim], dtype=np.float32)
         self.buffer_next_obs = np.zeros([self.capacity, self.obs_dim], dtype=np.float32)
+        # elif args['alg_type'] == 'frame_stack':
+        #     self.buffer_obs = np.zeros([self.capacity, args['frame_stacking_length'] , self.obs_dim], dtype=np.float32)
+        #     self.buffer_next_obs = np.zeros([self.capacity, args['frame_stacking_length'] ,self.obs_dim], dtype=np.float32)
+        # else:
+        #     assert False
         self.buffer_action = np.zeros([self.capacity], dtype=np.int32)
 
         self.buffer_rewards = np.zeros([self.capacity], dtype=np.float32)
