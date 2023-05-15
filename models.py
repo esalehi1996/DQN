@@ -33,7 +33,7 @@ class QNetwork(nn.Module):
         # print(xu.shape)
 
         x1 = F.elu(self.linear1(state))
-        x1 = F.elu(self.linear2(state))
+        x1 = F.elu(self.linear2(x1))
         x1 = F.elu(self.linear3(x1))
         x1 = self.linear4(x1)
 
