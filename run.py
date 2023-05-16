@@ -5,6 +5,7 @@ import os
 # from DQN import agent
 # from buffer import buffer
 from torch.utils.tensorboard import SummaryWriter
+import gc
 import gym
 import gym_minigrid
 from gym_minigrid.wrappers import *
@@ -102,6 +103,7 @@ def run_exp(args):
 
                 state = next_state
                 if total_numsteps % args['logging_freq'] == args['logging_freq']-1:
+                    gc.collect()
                     avg_reward , avg_discount_adj_reward = log_test_and_save(env, agent, writer, args, avg_reward, avg_q_loss, updates, k_episode, i_episode, total_numsteps, avg_episode_steps , seed  , num_nonzero_rewards)
                     list_of_test_rewards.append(avg_reward)
                     list_of_discount_test_rewards.append(avg_discount_adj_reward)
@@ -124,6 +126,10 @@ def run_exp(args):
             ls_running_rewards.append(episode_reward)
             avg_reward = avg_reward + episode_reward
             avg_episode_steps = episode_steps + avg_episode_steps
+
+
+            del ls_obs
+            del ls_obs_
 
 
 
