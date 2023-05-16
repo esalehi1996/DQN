@@ -15,7 +15,7 @@ def main():
     parser.add_argument('--exp_name', type=str)
     parser.add_argument('--env_name', type=str)
     parser.add_argument('--alg_type', type=str, default='full_obs')
-    parser.add_argument('--frame_stacking_length', type=int, default=8)
+    parser.add_argument('--frame_stacking_length', type=int, default=10)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--hidden_size', type=int, default=128)
     parser.add_argument('--gamma', type=float, default=0.99)
